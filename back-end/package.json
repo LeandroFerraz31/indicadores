@@ -2,9 +2,9 @@
   "name": "indicadores",
   "version": "1.0.0",
   "main": "server.js",
-  "scripts": {
-    "start": "yarn start"
-  },
+ "scripts": {
+  "start": "node server.js"
+},
 
   "keywords": [],
   "author": "",

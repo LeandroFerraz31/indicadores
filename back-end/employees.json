@@ -30,20 +30,5 @@
     "drinker": "Não",
     "imc": 34,
     "id": 2
-  },
-  {
-    "name": "test2",
-    "sector": "transporte",
-    "branch": "CA",
-    "conditions": [
-      "Ansiedade",
-      "Depressão"
-    ],
-    "medication": "DIPORANA",
-    "pcd": "Sim, Visual",
-    "smoker": "Não",
-    "drinker": "Sim",
-    "imc": 45,
-    "id": 3
   }
 ]
