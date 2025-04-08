@@ -15,10 +15,14 @@ let currentDeleteId = null;
 
 async function fetchEmployees() {
     try {
-        const response = await fetch('/api/employees'); // URL relativa
-        if (!response.ok) throw new Error(`Erro na requisição: ${response.status}`);
+        console.log('Buscando funcionários em /api/employees');
+        const response = await fetch('/api/employees');
+        if (!response.ok) {
+            throw new Error(`Erro na requisição: ${response.status} - ${response.statusText}`);
+        }
         employeesData = await response.json();
         filteredData = [...employeesData];
+        console.log('Funcionários carregados:', employeesData);
         renderTable();
         renderSummaryCards();
         renderCharts();
@@ -33,6 +37,7 @@ async function fetchEmployees() {
 const countIndicators = () => {
     const counts = {
         HAS: 0, DM: 0, Cardíaco: 0, Asmático: 0, CA: 0, Ansiedade: 0, Renal: 0, Depressão: 0, Trombose: 0,
+        Hérnia: 0, Epilepsia: 0, Tendinite: 0, Psiquiátrico: 0,
         medication: 0, smoker: 0, drinker: 0, pcd: 0,
         imcBelow18: 0, imc18to24: 0, imc24to29: 0, imc29to34: 0, imc34to39: 0, imcAbove39: 0
     };
@@ -63,17 +68,31 @@ const renderTable = () => {
     tbody.innerHTML = '';
 
     filteredData.forEach((employee, index) => {
+        const familyHistoryStr = Object.entries(employee.familyHistory || {})
+            .filter(([condition, who]) => who)
+            .map(([condition, who]) => `${condition}: ${who}`)
+            .join(', ');
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${employee.name}</td>
+            <td>${employee.age}</td>
+            <td>${employee.weight}</td>
+            <td>${employee.height}</td>
             <td>${employee.sector}</td>
             <td>${employee.branch || 'N/A'}</td>
             <td>${employee.conditions.join(', ')}</td>
-            <td>${employee.medication}</td>
+            <td>${employee.medication || 'Nenhuma'}</td>
             <td>${employee.pcd}</td>
             <td>${employee.smoker}</td>
             <td>${employee.drinker}</td>
             <td>${employee.imc}</td>
+            <td>${employee.fractured}</td>
+            <td>${employee.fracturedPart || 'N/A'}</td>
+            <td>${employee.hospitalized}</td>
+            <td>${employee.hospitalizationReason || 'N/A'}</td>
+            <td>${employee.lastCheckup || 'N/A'}</td>
+            <td>${familyHistoryStr || 'Nenhum'}</td>
+            <td>${employee.healthComplaint || 'Nenhuma'}</td>
             <td>
                 <button class="action-btn edit-btn" data-index="${index}">Editar</button>
                 <button class="action-btn delete-btn" data-index="${index}">Excluir</button>
@@ -117,7 +136,11 @@ const renderHealthConditionsChart = () => {
         { key: 'Ansiedade', label: 'Ansiedade' },
         { key: 'Renal', label: 'Renal' },
         { key: 'Depressão', label: 'Depressão' },
-        { key: 'Trombose', label: 'Trombose' }
+        { key: 'Trombose', label: 'Trombose' },
+        { key: 'Hérnia', label: 'Hérnia' },
+        { key: 'Epilepsia', label: 'Epilepsia' },
+        { key: 'Tendinite', label: 'Tendinite' },
+        { key: 'Psiquiátrico', label: 'Psiquiátrico' }
     ];
 
     const conditions = selectedFilters.includes('all') ? allConditions : allConditions.filter(condition => selectedFilters.includes(condition.key));
@@ -277,6 +300,9 @@ const populateBranchFilter = () => {
 const editEmployee = (index) => {
     const employee = filteredData[index];
     document.getElementById('name').value = employee.name;
+    document.getElementById('age').value = employee.age;
+    document.getElementById('weight').value = employee.weight;
+    document.getElementById('height').value = employee.height;
     document.getElementById('sector').value = employee.sector;
     document.getElementById('branch').value = employee.branch || '';
     document.querySelectorAll('input[name="condition"]').forEach(checkbox => checkbox.checked = false);
@@ -289,6 +315,22 @@ const editEmployee = (index) => {
     document.querySelectorAll('input[name="smoker"]').forEach(radio => radio.checked = radio.value === employee.smoker);
     document.querySelectorAll('input[name="drinker"]').forEach(radio => radio.checked = radio.value === employee.drinker);
     document.getElementById('imc').value = employee.imc;
+    document.querySelectorAll('input[name="fractured"]').forEach(radio => radio.checked = radio.value === employee.fractured);
+    document.getElementById('fracturedPart').value = employee.fracturedPart || '';
+    document.querySelectorAll('input[name="hospitalized"]').forEach(radio => radio.checked = radio.value === employee.hospitalized);
+    document.getElementById('hospitalizationReason').value = employee.hospitalizationReason || '';
+    document.getElementById('lastCheckup').value = employee.lastCheckup || '';
+    document.querySelectorAll('input[name="familyHistory"]').forEach(checkbox => checkbox.checked = false);
+    document.querySelectorAll('input[name^="family"][name$="Who"]').forEach(input => input.value = '');
+    if (employee.familyHistory) {
+        Object.entries(employee.familyHistory).forEach(([condition, who]) => {
+            const checkbox = document.querySelector(`input[name="familyHistory"][value="${condition}"]`);
+            if (checkbox) checkbox.checked = true;
+            const whoInput = document.querySelector(`input[name="family${condition}Who"]`);
+            if (whoInput) whoInput.value = who || '';
+        });
+    }
+    document.getElementById('healthComplaint').value = employee.healthComplaint || '';
     document.getElementById('employeeId').value = employee.id;
     modal.style.display = 'block';
 };
@@ -301,10 +343,13 @@ const showDeleteConfirmation = (index) => {
 const deleteEmployee = async (index) => {
     const employee = filteredData[index];
     try {
-        const response = await fetch(`/api/employees/${employee.id}`, { // URL relativa
+        console.log('Excluindo funcionário com ID:', employee.id);
+        const response = await fetch(`/api/employees/${employee.id}`, {
             method: 'DELETE'
         });
-        if (!response.ok) throw new Error(`Erro ao excluir: ${response.status}`);
+        if (!response.ok) {
+            throw new Error(`Erro ao excluir: ${response.status} - ${response.statusText}`);
+        }
         await fetchEmployees();
         deleteModal.style.display = 'none';
     } catch (error) {
@@ -315,6 +360,9 @@ const deleteEmployee = async (index) => {
 
 const addNewEmployee = async () => {
     const name = document.getElementById('name').value;
+    const age = parseInt(document.getElementById('age').value);
+    const weight = parseFloat(document.getElementById('weight').value);
+    const height = parseFloat(document.getElementById('height').value);
     const sector = document.getElementById('sector').value;
     const branch = document.getElementById('branch').value;
     const conditions = Array.from(document.querySelectorAll('input[name="condition"]:checked')).map(el => el.value);
@@ -323,28 +371,44 @@ const addNewEmployee = async () => {
     const smoker = document.querySelector('input[name="smoker"]:checked')?.value;
     const drinker = document.querySelector('input[name="drinker"]:checked')?.value;
     const imc = parseFloat(document.getElementById('imc').value);
+    const fractured = document.querySelector('input[name="fractured"]:checked')?.value;
+    const fracturedPart = document.getElementById('fracturedPart').value;
+    const hospitalized = document.querySelector('input[name="hospitalized"]:checked')?.value;
+    const hospitalizationReason = document.getElementById('hospitalizationReason').value;
+    const lastCheckup = document.getElementById('lastCheckup').value;
+    const familyHistoryCheckboxes = Array.from(document.querySelectorAll('input[name="familyHistory"]:checked'));
+    const familyHistory = {};
+    familyHistoryCheckboxes.forEach(checkbox => {
+        const condition = checkbox.value;
+        const whoInput = document.querySelector(`input[name="family${condition}Who"]`);
+        familyHistory[condition] = whoInput ? whoInput.value : '';
+    });
+    const healthComplaint = document.getElementById('healthComplaint').value;
     const employeeId = document.getElementById('employeeId').value;
 
-    // Validação de campos obrigatórios
-    if (!name || !sector || !branch || isNaN(imc)) {
-        alert('Preencha todos os campos obrigatórios (Nome, Setor, Filial, IMC).');
+    if (!name || !age || !weight || !height || !sector || !branch || isNaN(imc) || !fractured || !hospitalized) {
+        alert('Preencha todos os campos obrigatórios (Nome, Idade, Peso, Altura, Setor, Filial, IMC, Fraturou, Internado).');
         return;
     }
 
     const newEmployee = {
         id: employeeId ? parseInt(employeeId) : undefined,
-        name, sector, branch, conditions, medication, pcd, smoker, drinker, imc
+        name, age, weight, height, sector, branch, conditions, medication, pcd, smoker, drinker, imc,
+        fractured, fracturedPart, hospitalized, hospitalizationReason, lastCheckup, familyHistory, healthComplaint
     };
 
-    console.log('Dados enviados:', newEmployee); // Log para depuração
+    console.log('Dados enviados:', JSON.stringify(newEmployee, null, 2));
 
     try {
-        const response = await fetch('/api/employees', { // URL relativa
+        const response = await fetch('/api/employees', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify( newEmployee)
+            body: JSON.stringify(newEmployee)
         });
-        if (!response.ok) throw new Error(`Erro ao salvar: ${response.status} ${response.statusText}`);
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Erro ao salvar: ${response.status} - ${response.statusText} - ${errorText}`);
+        }
         modal.style.display = 'none';
         employeeForm.reset();
         document.getElementById('employeeId').value = '';
@@ -372,6 +436,10 @@ const exportData = () => {
         ["Renal", counts.Renal],
         ["Depressão", counts.Depressão],
         ["Trombose", counts.Trombose],
+        ["Hérnia", counts.Hérnia],
+        ["Epilepsia", counts.Epilepsia],
+        ["Tendinite", counts.Tendinite],
+        ["Psiquiátrico", counts.Psiquiátrico],
         [],
         ["INDICADORES DE IMC"],
         ["IMC abaixo de 18", counts.imcBelow18],
