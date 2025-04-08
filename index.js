@@ -9,7 +9,7 @@ const DATA_FILE = path.join(__dirname, 'employees.json');
 
 app.use(express.json());
 app.use(cors());
-app.use(express.static(__dirname));
+app.use(express.static(__dirname)); // Serve arquivos estáticos como index.html, CSS, JS, etc.
 
 async function loadData() {
     try {
@@ -51,6 +51,11 @@ app.delete('/api/employees/:id', async (req, res) => {
     const updatedEmployees = employees.filter(emp => emp.id !== id);
     await saveData(updatedEmployees);
     res.json({ success: true });
+});
+
+// Rota principal para carregar o index.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.listen(PORT, () => {
