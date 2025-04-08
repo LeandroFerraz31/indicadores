@@ -1,31 +1,54 @@
 const express = require('express');
-const fs = require('fs').promises;
-const path = require('path');
 const cors = require('cors');
-
+const sqlite3 = require('sqlite3').verbose();
 const app = express();
 const PORT = process.env.PORT || 10000;
-const DATA_FILE = path.join(__dirname, 'employees.json');
 
 app.use(express.json());
 app.use(cors());
-app.use(express.static(__dirname)); // Serve arquivos estáticos como index.html, CSS, JS, etc.
+app.use(express.static(__dirname));
+
+const db = new sqlite3.Database('./employees.db', (err) => {
+    if (err) console.error('Erro ao abrir banco:', err);
+    else console.log('Banco de dados conectado');
+});
+
+db.run(`CREATE TABLE IF NOT EXISTS employees (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT, sector TEXT, branch TEXT, conditions TEXT,
+    medication TEXT, pcd TEXT, smoker TEXT, drinker TEXT, imc REAL
+)`);
 
 async function loadData() {
-    try {
-        const data = await fs.readFile(DATA_FILE, 'utf8');
-        return JSON.parse(data);
-    } catch (error) {
-        console.error('Erro ao carregar employees.json:', error.message);
-        return [];
-    }
+    return new Promise((resolve, reject) => {
+        db.all('SELECT * FROM employees', (err, rows) => {
+            if (err) reject(err);
+            else resolve(rows.map(row => ({
+                ...row,
+                conditions: row.conditions ? JSON.parse(row.conditions) : []
+            })));
+        });
+    });
 }
 
-async function saveData(data) {
-    try {
-        await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2));
-    } catch (error) {
-        console.error('Erro ao salvar employees.json:', error.message);
+async function saveData(employee) {
+    const { id, name, sector, branch, conditions, medication, pcd, smoker, drinker, imc } = employee;
+    if (id) {
+        await new Promise((resolve, reject) => {
+            db.run(`UPDATE employees SET name=?, sector=?, branch=?, conditions=?, medication=?, pcd=?, smoker=?, drinker=?, imc=? WHERE id=?`,
+                [name, sector, branch, JSON.stringify(conditions), medication, pcd, smoker, drinker, imc, id], (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+        });
+    } else {
+        await new Promise((resolve, reject) => {
+            db.run(`INSERT INTO employees (name, sector, branch, conditions, medication, pcd, smoker, drinker, imc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [name, sector, branch, JSON.stringify(conditions), medication, pcd, smoker, drinker, imc], (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                });
+        });
     }
 }
 
@@ -35,36 +58,24 @@ app.get('/api/employees', async (req, res) => {
 });
 
 app.post('/api/employees', async (req, res) => {
-    const employees = await loadData();
     const newEmployee = req.body;
-
-    if (newEmployee.id) {
-        const index = employees.findIndex(emp => emp.id === newEmployee.id);
-        if (index !== -1) {
-            employees[index] = newEmployee;
-        } else {
-            employees.push(newEmployee);
-        }
-    } else {
-        newEmployee.id = employees.length > 0 ? Math.max(...employees.map(emp => emp.id)) + 1 : 1;
-        employees.push(newEmployee);
-    }
-
-    await saveData(employees);
+    await saveData(newEmployee);
     res.json(newEmployee);
 });
 
 app.delete('/api/employees/:id', async (req, res) => {
-    const employees = await loadData();
     const id = parseInt(req.params.id);
-    const updatedEmployees = employees.filter(emp => emp.id !== id);
-    await saveData(updatedEmployees);
+    await new Promise((resolve, reject) => {
+        db.run('DELETE FROM employees WHERE id = ?', [id], (err) => {
+            if (err) reject(err);
+            else resolve();
+        });
+    });
     res.json({ success: true });
 });
 
-// Rota principal para carregar o index.html
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(__dirname + '/index.html');
 });
 
 app.listen(PORT, () => {
