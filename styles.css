@@ -24,7 +24,7 @@ body {
     background-color: var(--light-bg);
     color: var(--dark-text);
     line-height: 1.6;
-    font-size: 16px; /* Base para responsividade */
+    font-size: 16px;
 }
 
 header {
@@ -428,6 +428,13 @@ select:focus {
 .checkbox-group input,
 .radio-group input {
     margin-right: 0.5rem;
+}
+
+.checkbox-group input[type="text"] {
+    width: auto;
+    margin-left: 0.5rem;
+    padding: 0.4rem;
+    font-size: 0.85rem;
 }
 
 .delete-modal {

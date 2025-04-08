@@ -69,6 +69,10 @@
                             <option value="Renal">Renal</option>
                             <option value="Depressão">Depressão</option>
                             <option value="Trombose">Trombose</option>
+                            <option value="Hérnia">Hérnia</option>
+                            <option value="Epilepsia">Epilepsia</option>
+                            <option value="Tendinite">Tendinite</option>
+                            <option value="Psiquiátrico">Psiquiátrico</option>
                         </select>
                         <button id="applyHealthFilter" class="filter-btn">Aplicar</button>
                     </div>
@@ -136,6 +140,9 @@
                         <thead>
                             <tr>
                                 <th>Nome</th>
+                                <th>Idade</th>
+                                <th>Peso</th>
+                                <th>Altura</th>
                                 <th>Setor</th>
                                 <th>Filial/Unidade</th>
                                 <th>Patologia</th>
@@ -144,6 +151,13 @@
                                 <th>Fumante</th>
                                 <th>Etilista</th>
                                 <th>IMC</th>
+                                <th>Fraturou?</th>
+                                <th>Parte Fraturada</th>
+                                <th>Internado?</th>
+                                <th>Motivo/Tempo</th>
+                                <th>Último Check-up</th>
+                                <th>Histórico Familiar</th>
+                                <th>Queixa de Saúde</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -162,6 +176,18 @@
                 <div class="form-group">
                     <label for="name">Nome:</label>
                     <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="age">Idade:</label>
+                    <input type="number" id="age" min="16" max="120" required>
+                </div>
+                <div class="form-group">
+                    <label for="weight">Peso (kg):</label>
+                    <input type="number" id="weight" min="30" max="300" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label for="height">Altura (m):</label>
+                    <input type="number" id="height" min="1" max="2.5" step="0.01" required>
                 </div>
                 <div class="form-group">
                     <label for="sector">Setor:</label>
@@ -199,6 +225,10 @@
                         <label><input type="checkbox" name="condition" value="Renal"> Renal</label>
                         <label><input type="checkbox" name="condition" value="Depressão"> Depressão</label>
                         <label><input type="checkbox" name="condition" value="Trombose"> Trombose</label>
+                        <label><input type="checkbox" name="condition" value="Hérnia"> Hérnia</label>
+                        <label><input type="checkbox" name="condition" value="Epilepsia"> Epilepsia</label>
+                        <label><input type="checkbox" name="condition" value="Tendinite"> Tendinite</label>
+                        <label><input type="checkbox" name="condition" value="Psiquiátrico"> Psiquiátrico</label>
                     </div>
                 </div>
                 <div class="form-group">
@@ -233,6 +263,49 @@
                 <div class="form-group">
                     <label for="imc">IMC:</label>
                     <input type="number" id="imc" min="10" max="60" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label>Já fraturou alguma parte do corpo?</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="fractured" value="Sim"> Sim</label>
+                        <label><input type="radio" name="fractured" value="Não" checked> Não</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="fracturedPart">Qual parte fraturou?</label>
+                    <input type="text" id="fracturedPart">
+                </div>
+                <div class="form-group">
+                    <label>Já esteve internado?</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="hospitalized" value="Sim"> Sim</label>
+                        <label><input type="radio" name="hospitalized" value="Não" checked> Não</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="hospitalizationReason">Por qual motivo e há quanto tempo atrás?</label>
+                    <input type="text" id="hospitalizationReason">
+                </div>
+                <div class="form-group">
+                    <label for="lastCheckup">Quando fez o último check-up médico?</label>
+                    <input type="text" id="lastCheckup">
+                </div>
+                <div class="form-group">
+                    <label>Histórico Familiar (1º grau):</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="familyHistory" value="HAS"> HAS</label>
+                        <input type="text" name="familyHasWho" placeholder="Quem?">
+                        <label><input type="checkbox" name="familyHistory" value="DM"> DM</label>
+                        <input type="text" name="familyDmWho" placeholder="Quem?">
+                        <label><input type="checkbox" name="familyHistory" value="Cardíaco"> Cardíaco</label>
+                        <input type="text" name="familyCardiacWho" placeholder="Quem?">
+                        <label><input type="checkbox" name="familyHistory" value="CA"> Câncer (CA)</label>
+                        <input type="text" name="familyCaWho" placeholder="Quem?">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="healthComplaint">Alguma queixa de saúde?</label>
+                    <input type="text" id="healthComplaint">
                 </div>
                 <input type="hidden" id="employeeId" value="">
                 <button type="submit">Salvar</button>
