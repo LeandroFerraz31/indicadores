@@ -14,14 +14,20 @@ const employeeFilter = document.getElementById('employeeFilter');
 let currentDeleteId = null;
 
 async function fetchEmployees() {
-    const response = await fetch('http://localhost:10000/api/employees');
-    employeesData = await response.json();
-    filteredData = [...employeesData];
-    renderTable();
-    renderSummaryCards();
-    renderCharts();
-    populateEmployeeSuggestions();
-    populateBranchFilter();
+    try {
+        const response = await fetch('http://localhost:10000/api/employees');
+        if (!response.ok) throw new Error(`Erro na requisição: ${response.status}`);
+        employeesData = await response.json();
+        filteredData = [...employeesData];
+        renderTable();
+        renderSummaryCards();
+        renderCharts();
+        populateEmployeeSuggestions();
+        populateBranchFilter();
+    } catch (error) {
+        console.error('Erro ao buscar funcionários:', error);
+        alert('Não foi possível carregar os dados. Verifique o console para mais detalhes.');
+    }
 }
 
 const countIndicators = () => {
@@ -52,6 +58,7 @@ const countIndicators = () => {
 };
 
 const renderTable = () => {
+    console.log('Renderizando tabela com dados:', filteredData); // Log para depuração
     const tbody = dataTable.querySelector('tbody');
     tbody.innerHTML = '';
 
@@ -293,11 +300,17 @@ const showDeleteConfirmation = (index) => {
 
 const deleteEmployee = async (index) => {
     const employee = filteredData[index];
-    await fetch(`http://localhost:3000/api/employees/${employee.id}`, {
-        method: 'DELETE'
-    });
-    await fetchEmployees();
-    deleteModal.style.display = 'none';
+    try {
+        const response = await fetch(`http://localhost:10000/api/employees/${employee.id}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) throw new Error(`Erro ao excluir: ${response.status}`);
+        await fetchEmployees();
+        deleteModal.style.display = 'none';
+    } catch (error) {
+        console.error('Erro ao excluir funcionário:', error);
+        alert('Erro ao excluir funcionário. Verifique o console.');
+    }
 };
 
 const addNewEmployee = async () => {
@@ -317,16 +330,21 @@ const addNewEmployee = async () => {
         name, sector, branch, conditions, medication, pcd, smoker, drinker, imc
     };
 
-    await fetch('http://localhost:3000/api/employees', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newEmployee)
-    });
-
-    modal.style.display = 'none';
-    employeeForm.reset();
-    document.getElementById('employeeId').value = '';
-    await fetchEmployees();
+    try {
+        const response = await fetch('http://localhost:10000/api/employees', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newEmployee)
+        });
+        if (!response.ok) throw new Error(`Erro ao salvar: ${response.status}`);
+        modal.style.display = 'none';
+        employeeForm.reset();
+        document.getElementById('employeeId').value = '';
+        await fetchEmployees();
+    } catch (error) {
+        console.error('Erro ao adicionar funcionário:', error);
+        alert('Erro ao salvar funcionário. Verifique o console.');
+    }
 };
 
 const exportData = () => {
@@ -377,7 +395,7 @@ const applyFilters = () => {
         if (selectedEmployee) {
             filteredData = [selectedEmployee];
         } else {
-            filteredData = [...employeesData]; // Se não encontrar, volta para todos
+            filteredData = [...employeesData];
         }
     } else if (branchFilterValue !== 'all') {
         filteredData = employeesData.filter(employee => employee.branch === branchFilterValue);

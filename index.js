@@ -16,12 +16,17 @@ async function loadData() {
         const data = await fs.readFile(DATA_FILE, 'utf8');
         return JSON.parse(data);
     } catch (error) {
+        console.error('Erro ao carregar employees.json:', error.message);
         return [];
     }
 }
 
 async function saveData(data) {
-    await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2));
+    try {
+        await fs.writeFile(DATA_FILE, JSON.stringify(data, null, 2));
+    } catch (error) {
+        console.error('Erro ao salvar employees.json:', error.message);
+    }
 }
 
 app.get('/api/employees', async (req, res) => {
@@ -35,7 +40,11 @@ app.post('/api/employees', async (req, res) => {
 
     if (newEmployee.id) {
         const index = employees.findIndex(emp => emp.id === newEmployee.id);
-        if (index !== -1) employees[index] = newEmployee;
+        if (index !== -1) {
+            employees[index] = newEmployee;
+        } else {
+            employees.push(newEmployee);
+        }
     } else {
         newEmployee.id = employees.length > 0 ? Math.max(...employees.map(emp => emp.id)) + 1 : 1;
         employees.push(newEmployee);
