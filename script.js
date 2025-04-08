@@ -14,7 +14,7 @@ const employeeFilter = document.getElementById('employeeFilter');
 let currentDeleteId = null;
 
 async function fetchEmployees() {
-    const response = await fetch('http://localhost:3000/api/employees');
+    const response = await fetch('http://localhost:10000/api/employees');
     employeesData = await response.json();
     filteredData = [...employeesData];
     renderTable();
