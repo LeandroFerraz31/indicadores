@@ -15,7 +15,7 @@ let currentDeleteId = null;
 
 async function fetchEmployees() {
     try {
-        const response = await fetch('http://localhost:10000/api/employees');
+        const response = await fetch('/api/employees'); // URL relativa
         if (!response.ok) throw new Error(`Erro na requisição: ${response.status}`);
         employeesData = await response.json();
         filteredData = [...employeesData];
@@ -58,7 +58,7 @@ const countIndicators = () => {
 };
 
 const renderTable = () => {
-    console.log('Renderizando tabela com dados:', filteredData); // Log para depuração
+    console.log('Renderizando tabela com dados:', filteredData);
     const tbody = dataTable.querySelector('tbody');
     tbody.innerHTML = '';
 
@@ -301,7 +301,7 @@ const showDeleteConfirmation = (index) => {
 const deleteEmployee = async (index) => {
     const employee = filteredData[index];
     try {
-        const response = await fetch(`http://localhost:10000/api/employees/${employee.id}`, {
+        const response = await fetch(`/api/employees/${employee.id}`, { // URL relativa
             method: 'DELETE'
         });
         if (!response.ok) throw new Error(`Erro ao excluir: ${response.status}`);
@@ -320,23 +320,31 @@ const addNewEmployee = async () => {
     const conditions = Array.from(document.querySelectorAll('input[name="condition"]:checked')).map(el => el.value);
     const medication = document.getElementById('medication').value;
     const pcd = document.getElementById('pcd').value;
-    const smoker = document.querySelector('input[name="smoker"]:checked').value;
-    const drinker = document.querySelector('input[name="drinker"]:checked').value;
+    const smoker = document.querySelector('input[name="smoker"]:checked')?.value;
+    const drinker = document.querySelector('input[name="drinker"]:checked')?.value;
     const imc = parseFloat(document.getElementById('imc').value);
     const employeeId = document.getElementById('employeeId').value;
+
+    // Validação de campos obrigatórios
+    if (!name || !sector || !branch || isNaN(imc)) {
+        alert('Preencha todos os campos obrigatórios (Nome, Setor, Filial, IMC).');
+        return;
+    }
 
     const newEmployee = {
         id: employeeId ? parseInt(employeeId) : undefined,
         name, sector, branch, conditions, medication, pcd, smoker, drinker, imc
     };
 
+    console.log('Dados enviados:', newEmployee); // Log para depuração
+
     try {
-        const response = await fetch('http://localhost:10000/api/employees', {
+        const response = await fetch('/api/employees', { // URL relativa
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newEmployee)
+            body: JSON.stringify( newEmployee)
         });
-        if (!response.ok) throw new Error(`Erro ao salvar: ${response.status}`);
+        if (!response.ok) throw new Error(`Erro ao salvar: ${response.status} ${response.statusText}`);
         modal.style.display = 'none';
         employeeForm.reset();
         document.getElementById('employeeId').value = '';
