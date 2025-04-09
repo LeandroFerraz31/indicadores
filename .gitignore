@@ -5,3 +5,5 @@ yarn-error.log*
 dist/
 build/
 .env
+echo "node_modules/" > .gitignore
+echo "employees.db" >> .gitignore

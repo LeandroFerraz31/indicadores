@@ -1,3 +1,5 @@
+const API_BASE_URL = 'http://localhost:3000'; // Forçar localhost:3000 localmente; vazio no Render
+
 let employeesData = [];
 let filteredData = [];
 
@@ -15,11 +17,9 @@ let currentDeleteId = null;
 
 async function fetchEmployees() {
     try {
-        console.log('Buscando funcionários em /api/employees');
-        const response = await fetch('/api/employees');
-        if (!response.ok) {
-            throw new Error(`Erro na requisição: ${response.status} - ${response.statusText}`);
-        }
+        console.log('Buscando funcionários em', `${API_BASE_URL}/api/employees`);
+        const response = await fetch(`${API_BASE_URL}/api/employees`);
+        if (!response.ok) throw new Error(`Erro na requisição: ${response.status}`);
         employeesData = await response.json();
         filteredData = [...employeesData];
         console.log('Funcionários carregados:', employeesData);
@@ -30,7 +30,7 @@ async function fetchEmployees() {
         populateBranchFilter();
     } catch (error) {
         console.error('Erro ao buscar funcionários:', error);
-        alert('Não foi possível carregar os dados. Verifique o console para mais detalhes.');
+        alert('Não foi possível carregar os dados. Certifique-se de que o servidor está rodando.');
     }
 }
 
@@ -75,9 +75,9 @@ const renderTable = () => {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${employee.name}</td>
-            <td>${employee.age}</td>
-            <td>${employee.weight}</td>
-            <td>${employee.height}</td>
+            <td>${employee.age || 'N/A'}</td>
+            <td>${employee.weight || 'N/A'}</td>
+            <td>${employee.height || 'N/A'}</td>
             <td>${employee.sector}</td>
             <td>${employee.branch || 'N/A'}</td>
             <td>${employee.conditions.join(', ')}</td>
@@ -267,6 +267,7 @@ const renderHabitsChart = () => {
 };
 
 const renderCharts = () => {
+    console.log('Renderizando gráficos');
     renderHealthConditionsChart();
     renderImcChart();
     renderHabitsChart();
@@ -298,11 +299,12 @@ const populateBranchFilter = () => {
 };
 
 const editEmployee = (index) => {
+    console.log('Editando funcionário no índice:', index);
     const employee = filteredData[index];
     document.getElementById('name').value = employee.name;
-    document.getElementById('age').value = employee.age;
-    document.getElementById('weight').value = employee.weight;
-    document.getElementById('height').value = employee.height;
+    document.getElementById('age').value = employee.age || '';
+    document.getElementById('weight').value = employee.weight || '';
+    document.getElementById('height').value = employee.height || '';
     document.getElementById('sector').value = employee.sector;
     document.getElementById('branch').value = employee.branch || '';
     document.querySelectorAll('input[name="condition"]').forEach(checkbox => checkbox.checked = false);
@@ -336,6 +338,7 @@ const editEmployee = (index) => {
 };
 
 const showDeleteConfirmation = (index) => {
+    console.log('Mostrando confirmação de exclusão para índice:', index);
     currentDeleteId = index;
     deleteModal.style.display = 'block';
 };
@@ -344,38 +347,36 @@ const deleteEmployee = async (index) => {
     const employee = filteredData[index];
     try {
         console.log('Excluindo funcionário com ID:', employee.id);
-        const response = await fetch(`/api/employees/${employee.id}`, {
+        const response = await fetch(`${API_BASE_URL}/api/employees/${employee.id}`, {
             method: 'DELETE'
         });
-        if (!response.ok) {
-            throw new Error(`Erro ao excluir: ${response.status} - ${response.statusText}`);
-        }
+        if (!response.ok) throw new Error(`Erro ao excluir: ${response.status}`);
         await fetchEmployees();
         deleteModal.style.display = 'none';
     } catch (error) {
-        console.error('Erro ao excluir funcionário:', error);
-        alert('Erro ao excluir funcionário. Verifique o console.');
+        console.error('Erro ao excluir:', error);
+        alert('Erro ao excluir funcionário.');
     }
 };
 
 const addNewEmployee = async () => {
     const name = document.getElementById('name').value;
-    const age = parseInt(document.getElementById('age').value);
-    const weight = parseFloat(document.getElementById('weight').value);
-    const height = parseFloat(document.getElementById('height').value);
+    const age = parseInt(document.getElementById('age').value) || null;
+    const weight = parseFloat(document.getElementById('weight').value) || null;
+    const height = parseFloat(document.getElementById('height').value) || null;
     const sector = document.getElementById('sector').value;
     const branch = document.getElementById('branch').value;
     const conditions = Array.from(document.querySelectorAll('input[name="condition"]:checked')).map(el => el.value);
-    const medication = document.getElementById('medication').value;
+    const medication = document.getElementById('medication').value || '';
     const pcd = document.getElementById('pcd').value;
-    const smoker = document.querySelector('input[name="smoker"]:checked')?.value;
-    const drinker = document.querySelector('input[name="drinker"]:checked')?.value;
+    const smoker = document.querySelector('input[name="smoker"]:checked')?.value || 'Não';
+    const drinker = document.querySelector('input[name="drinker"]:checked')?.value || 'Não';
     const imc = parseFloat(document.getElementById('imc').value);
-    const fractured = document.querySelector('input[name="fractured"]:checked')?.value;
-    const fracturedPart = document.getElementById('fracturedPart').value;
-    const hospitalized = document.querySelector('input[name="hospitalized"]:checked')?.value;
-    const hospitalizationReason = document.getElementById('hospitalizationReason').value;
-    const lastCheckup = document.getElementById('lastCheckup').value;
+    const fractured = document.querySelector('input[name="fractured"]:checked')?.value || 'Não';
+    const fracturedPart = document.getElementById('fracturedPart').value || '';
+    const hospitalized = document.querySelector('input[name="hospitalized"]:checked')?.value || 'Não';
+    const hospitalizationReason = document.getElementById('hospitalizationReason').value || '';
+    const lastCheckup = document.getElementById('lastCheckup').value || '';
     const familyHistoryCheckboxes = Array.from(document.querySelectorAll('input[name="familyHistory"]:checked'));
     const familyHistory = {};
     familyHistoryCheckboxes.forEach(checkbox => {
@@ -383,11 +384,11 @@ const addNewEmployee = async () => {
         const whoInput = document.querySelector(`input[name="family${condition}Who"]`);
         familyHistory[condition] = whoInput ? whoInput.value : '';
     });
-    const healthComplaint = document.getElementById('healthComplaint').value;
+    const healthComplaint = document.getElementById('healthComplaint').value || '';
     const employeeId = document.getElementById('employeeId').value;
 
-    if (!name || !age || !weight || !height || !sector || !branch || isNaN(imc) || !fractured || !hospitalized) {
-        alert('Preencha todos os campos obrigatórios (Nome, Idade, Peso, Altura, Setor, Filial, IMC, Fraturou, Internado).');
+    if (!name || !sector || !branch || isNaN(imc)) {
+        alert('Preencha todos os campos obrigatórios (Nome, Setor, Filial, IMC).');
         return;
     }
 
@@ -397,29 +398,25 @@ const addNewEmployee = async () => {
         fractured, fracturedPart, hospitalized, hospitalizationReason, lastCheckup, familyHistory, healthComplaint
     };
 
-    console.log('Dados enviados:', JSON.stringify(newEmployee, null, 2));
-
     try {
-        const response = await fetch('/api/employees', {
+        const response = await fetch(`${API_BASE_URL}/api/employees`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newEmployee)
         });
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Erro ao salvar: ${response.status} - ${response.statusText} - ${errorText}`);
-        }
+        if (!response.ok) throw new Error(`Erro ao salvar: ${response.status}`);
         modal.style.display = 'none';
         employeeForm.reset();
         document.getElementById('employeeId').value = '';
         await fetchEmployees();
     } catch (error) {
-        console.error('Erro ao adicionar funcionário:', error);
-        alert('Erro ao salvar funcionário. Verifique o console.');
+        console.error('Erro ao adicionar:', error);
+        alert('Erro ao salvar funcionário.');
     }
 };
 
 const exportData = () => {
+    console.log('Exportando dados');
     const counts = countIndicators();
     const reportData = [
         ["RELATÓRIO DE INDICADORES DE SAÚDE"],
@@ -463,6 +460,7 @@ const exportData = () => {
 };
 
 const applyFilters = () => {
+    console.log('Aplicando filtros');
     const employeeFilterValue = employeeFilter.value.trim();
     const branchFilterValue = document.getElementById('branchFilter').value;
 
@@ -485,6 +483,7 @@ const applyFilters = () => {
 };
 
 const initApp = () => {
+    console.log('Inicializando aplicativo');
     fetchEmployees();
 
     document.querySelectorAll('.tab-btn').forEach(tab => {
@@ -497,6 +496,7 @@ const initApp = () => {
     });
 
     addDataBtn.addEventListener('click', () => {
+        console.log('Abrindo modal para adicionar funcionário');
         employeeForm.reset();
         document.getElementById('employeeId').value = '';
         modal.style.display = 'block';
