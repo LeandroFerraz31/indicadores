@@ -8,10 +8,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const dbPath = process.env.RENDER ? '/data/employees.db' : path.join(__dirname, 'employees.db');
-const db = new sqlite3.Database(dbPath, (err) => {
+const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
     if (err) {
-        console.error('Erro ao abrir banco:', err.message);
-        process.exit(1);
+        console.error('Erro ao abrir/criar banco:', err.message);
     } else {
         console.log('Conectado ao banco SQLite em', dbPath);
     }
@@ -99,7 +98,11 @@ const seedDatabase = () => {
 
 // Verificar e carregar dados iniciais se a tabela estiver vazia
 db.get('SELECT COUNT(*) as count FROM employees', (err, row) => {
-    if (!err && row.count === 0) seedDatabase();
+    if (err) {
+        console.error('Erro ao verificar contagem:', err.message);
+    } else if (row.count === 0) {
+        seedDatabase();
+    }
 });
 
 // Middleware
