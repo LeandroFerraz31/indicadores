@@ -5,9 +5,20 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 3000;
 
+// Garantir que o diretório /data exista no Render
 const dbPath = process.env.RENDER ? '/data/employees.db' : path.join(__dirname, 'employees.db');
+if (process.env.RENDER) {
+    const dataDir = '/data';
+    if (!fs.existsSync(dataDir)) {
+        console.log('Diretório /data não existe, criando...');
+        fs.mkdirSync(dataDir, { recursive: true });
+    }
+    console.log('Caminho do banco no Render:', dbPath);
+}
+
+// Abrir ou criar o banco
 const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
     if (err) {
         console.error('Erro ao abrir/criar banco:', err.message);
