@@ -11,4 +11,4 @@ services:
     disk:
       name: data
       mountPath: /data
-      sizeGB: 3 # Ajuste conforme necessário
+      sizeGB: 1 # Ajuste conforme necessário
