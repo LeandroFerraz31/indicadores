@@ -11,6 +11,22 @@ const PORT = process.env.PORT || 3000; // Render define PORT como 10000
 const dbPath = process.env.RENDER ? '/data/employees.db' : path.join(__dirname, 'employees.db');
 console.log('Caminho do banco:', dbPath);
 
+// Verificar se o diretório /data existe e é gravável no Render
+if (process.env.RENDER) {
+    const dataDir = '/data';
+    try {
+        if (!fs.existsSync(dataDir)) {
+            console.error('Diretório /data não existe, mas deveria ser montado pelo Render.');
+        } else {
+            console.log('Diretório /data existe. Verificando permissões...');
+            fs.accessSync(dataDir, fs.constants.W_OK);
+            console.log('Diretório /data é gravável.');
+        }
+    } catch (err) {
+        console.error('Erro ao verificar/acessar /data:', err.message);
+    }
+}
+
 // Abrir ou criar o banco
 const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
     if (err) {
@@ -111,7 +127,7 @@ db.get('SELECT COUNT(*) as count FROM employees', (err, row) => {
 
 // Middleware
 app.use(express.json());
-app.use(cors()); // Permitir solicitações de qualquer origem
+app.use(cors());
 app.use(express.static(__dirname));
 
 // Rotas API
