@@ -1,4 +1,6 @@
-const API_BASE_URL = 'http://localhost:3000'; // Forçar localhost:3000 localmente; vazio no Render
+// Ajustar a URL da API dinamicamente para o ambiente correto
+const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000' : window.location.origin;
+console.log('API_BASE_URL definido como:', API_BASE_URL);
 
 let employeesData = [];
 let filteredData = [];
@@ -17,8 +19,9 @@ let currentDeleteId = null;
 
 async function fetchEmployees() {
     try {
-        console.log('Buscando funcionários em', `${API_BASE_URL}/api/employees`);
-        const response = await fetch(`${API_BASE_URL}/api/employees`);
+        const url = `${API_BASE_URL}/api/employees`;
+        console.log('Buscando funcionários em', url);
+        const response = await fetch(url);
         if (!response.ok) throw new Error(`Erro na requisição: ${response.status}`);
         employeesData = await response.json();
         filteredData = [...employeesData];
@@ -399,7 +402,9 @@ const addNewEmployee = async () => {
     };
 
     try {
-        const response = await fetch(`${API_BASE_URL}/api/employees`, {
+        const url = `${API_BASE_URL}/api/employees`;
+        console.log('Enviando dados para', url, 'com:', newEmployee);
+        const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newEmployee)
