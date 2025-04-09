@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3000'; // Forçar localhost:3000 localmente; vazio no Render
+const API_BASE_URL = 'http://localhost:10000'; // Forçar localhost:3000 localmente; vazio no Render
 
 let employeesData = [];
 let filteredData = [];
