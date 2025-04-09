@@ -5,10 +5,9 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-// Usar a porta definida pelo Render (via variável de ambiente PORT) ou 3000 apenas localmente
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000; // Render define PORT como 10000
 
-// Definir o caminho do banco de dados com base no ambiente
+// Definir o caminho do banco de dados
 const dbPath = process.env.RENDER ? '/data/employees.db' : path.join(__dirname, 'employees.db');
 console.log('Caminho do banco:', dbPath);
 
@@ -112,7 +111,7 @@ db.get('SELECT COUNT(*) as count FROM employees', (err, row) => {
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors()); // Permitir solicitações de qualquer origem
 app.use(express.static(__dirname));
 
 // Rotas API
