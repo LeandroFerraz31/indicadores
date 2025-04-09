@@ -2,7 +2,7 @@ services:
   - type: web
     name: dashboard-saude
     env: node
-    plan: free # ou outro plano
+    plan: free # ou outro plano, dependendo das suas necessidades
     buildCommand: npm install
     startCommand: npm start
     envVars:

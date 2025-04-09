@@ -5,13 +5,11 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-const PORT = process.env.PORT || 3000; // Render define PORT como 10000
+const PORT = process.env.PORT || 3000;
 
-// Definir o caminho do banco de dados
 const dbPath = process.env.RENDER ? '/data/employees.db' : path.join(__dirname, 'employees.db');
 console.log('Caminho do banco:', dbPath);
 
-// Verificar se o diretório /data existe e é gravável no Render
 if (process.env.RENDER) {
     const dataDir = '/data';
     try {
@@ -27,7 +25,6 @@ if (process.env.RENDER) {
     }
 }
 
-// Abrir ou criar o banco
 const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE, (err) => {
     if (err) {
         console.error('Erro ao abrir/criar banco:', err.message);
@@ -36,7 +33,6 @@ const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE | sqlite3.OPEN_CR
     }
 });
 
-// Criar tabela
 const createTableSQL = `CREATE TABLE IF NOT EXISTS employees (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -65,7 +61,6 @@ db.run(createTableSQL, (err) => {
     else console.log('Tabela employees criada ou já existente');
 });
 
-// Adicionar colunas faltantes
 const addColumnIfNotExists = (column, type) => {
     db.run(`ALTER TABLE employees ADD COLUMN ${column} ${type}`, (err) => {
         if (err && !err.message.includes('duplicate column name')) {
@@ -87,7 +82,6 @@ addColumnIfNotExists('lastCheckup', 'TEXT');
 addColumnIfNotExists('familyHistory', 'TEXT');
 addColumnIfNotExists('healthComplaint', 'TEXT');
 
-// Função para carregar dados iniciais (opcional)
 const seedDatabase = () => {
     const filePath = path.join(__dirname, 'employees.json');
     if (fs.existsSync(filePath)) {
@@ -116,7 +110,6 @@ const seedDatabase = () => {
     }
 };
 
-// Verificar e carregar dados iniciais se a tabela estiver vazia
 db.get('SELECT COUNT(*) as count FROM employees', (err, row) => {
     if (err) {
         console.error('Erro ao verificar contagem:', err.message);
@@ -125,12 +118,10 @@ db.get('SELECT COUNT(*) as count FROM employees', (err, row) => {
     }
 });
 
-// Middleware
 app.use(express.json());
 app.use(cors());
-app.use(express.static(__dirname));
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Rotas API
 app.get('/api/employees', (req, res) => {
     console.log('GET /api/employees solicitado');
     db.all('SELECT * FROM employees', (err, rows) => {
@@ -184,18 +175,15 @@ app.delete('/api/employees/:id', (req, res) => {
     });
 });
 
-// Servir frontend
 app.get('/', (req, res) => {
     console.log('Servindo index.html');
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Middleware 404
 app.use((req, res) => {
     res.status(404).json({ error: 'Rota não encontrada' });
 });
 
-// Graceful shutdown
 process.on('SIGTERM', () => {
     db.close(() => {
         console.log('Banco de dados fechado');

@@ -1,5 +1,7 @@
-// Ajustar a URL da API dinamicamente para o ambiente correto
-const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:3000' : window.location.origin;
+// Definir a URL da API dinamicamente
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+    ? 'http://localhost:3000' // Backend local
+    : window.location.origin; // Render ou outro ambiente
 console.log('API_BASE_URL definido como:', API_BASE_URL);
 
 let employeesData = [];
@@ -36,6 +38,8 @@ async function fetchEmployees() {
         alert('Não foi possível carregar os dados. Certifique-se de que o servidor está rodando.');
     }
 }
+
+// ... (resto do código sem alterações)
 
 const countIndicators = () => {
     const counts = {
