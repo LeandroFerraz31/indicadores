@@ -1,8 +1,9 @@
-// Definir a URL da API dinamicamente
 const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-    ? 'http://localhost:3000' // Backend local
-    : window.location.origin; // Render ou outro ambiente
+    ? 'http://localhost:3000' 
+    : window.location.origin;
 console.log('API_BASE_URL definido como:', API_BASE_URL);
+
+// ... (resto do código)
 
 let employeesData = [];
 let filteredData = [];

@@ -7,21 +7,24 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const dbPath = process.env.RENDER ? '/data/employees.db' : path.join(__dirname, 'employees.db');
+// Caminho do banco com fallback
+const dbPath = process.env.RENDER && fs.existsSync('/data') 
+    ? '/data/employees.db' 
+    : path.join(__dirname, 'employees.db');
 console.log('Caminho do banco:', dbPath);
 
 if (process.env.RENDER) {
     const dataDir = '/data';
-    try {
-        if (!fs.existsSync(dataDir)) {
-            console.error('Diretório /data não existe, mas deveria ser montado pelo Render.');
-        } else {
-            console.log('Diretório /data existe. Verificando permissões...');
+    if (!fs.existsSync(dataDir)) {
+        console.warn('Diretório /data não existe. Usando fallback:', dbPath);
+    } else {
+        console.log('Diretório /data existe. Verificando permissões...');
+        try {
             fs.accessSync(dataDir, fs.constants.W_OK);
             console.log('Diretório /data é gravável.');
+        } catch (err) {
+            console.error('Erro ao verificar permissões de /data:', err.message);
         }
-    } catch (err) {
-        console.error('Erro ao verificar/acessar /data:', err.message);
     }
 }
 
