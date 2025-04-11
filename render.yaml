@@ -2,13 +2,13 @@ services:
   - type: web
     name: dashboard-saude
     env: node
-    plan: free # ou outro plano, dependendo das suas necessidades
+    plan: free
     buildCommand: npm install
-    startCommand: npm start
+    startCommand: node index.js
     envVars:
       - key: NODE_VERSION
         value: 18
     disk:
       name: data
       mountPath: /data
-      sizeGB: 1 # Ajuste conforme necessário
+      sizeGB: 1

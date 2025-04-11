@@ -1,9 +1,7 @@
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-    ? 'http://localhost:3000' 
-    : window.location.origin;
+const API_BASE_URL = window.location.hostname.includes('onrender.com') 
+    ? window.location.origin 
+    : 'http://localhost:3000';
 console.log('API_BASE_URL definido como:', API_BASE_URL);
-
-// ... (resto do código)
 
 let employeesData = [];
 let filteredData = [];
@@ -39,8 +37,6 @@ async function fetchEmployees() {
         alert('Não foi possível carregar os dados. Certifique-se de que o servidor está rodando.');
     }
 }
-
-// ... (resto do código sem alterações)
 
 const countIndicators = () => {
     const counts = {
