@@ -84,7 +84,7 @@ node index.js
 ```
 ---
 
-##📈 Como Usar
+## 📈 Como Usar
 -🧑‍💼 Adicione ou edite dados de funcionários via formulários modais.
 
 -🔍 Filtre registros por funcionário ou unidade.
@@ -93,16 +93,16 @@ node index.js
 
 📥 Exporte relatórios como arquivos .xlsx (Excel).
 
-##🚧 Melhorias Futuras
+## 🚧 Melhorias Futuras
 🔐 Implementar autenticação para acesso seguro.
 
 📊 Integrar bibliotecas gráficas mais robustas como Chart.js.
 
 🔎 Ampliar filtros e funcionalidades de busca avançada.
 
-##🏷️ Tags
+## 🏷️ Tags
 #DashboardSaude #BemEstarFuncionarios #NodeJS #Express #SQLite
 #JavaScript #DesignResponsivo #VisualizacaoDados #APIRESTful #DeployRender
 
-##🧠 Autor
+## 🧠 Autor
 Leandro Ferraz
