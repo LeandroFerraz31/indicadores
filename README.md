@@ -82,6 +82,8 @@ npm install
 # 4. Inicie o servidor:
 node index.js
 
+---
+
 ##📈 Como Usar
 🧑‍💼 Adicione ou edite dados de funcionários via formulários modais.
 
