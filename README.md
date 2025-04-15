@@ -1,69 +1,106 @@
-Dashboard de Saúde
-Uma aplicação web para gerenciamento e visualização de dados de saúde de funcionários, construída com Node.js, Express, SQLite e um front-end responsivo.
-Propósito 🎯
+# 🩺 Dashboard de Saúde
+
+Uma aplicação web para gerenciamento e visualização de dados de saúde de funcionários, construída com **Node.js**, **Express**, **SQLite** e um front-end responsivo.
+
+---
+
+## 🎯 Propósito
+
 Monitorar e analisar métricas de saúde dos funcionários para apoiar programas de bem-estar no trabalho, fornecendo insights acionáveis por meio de visualização e gerenciamento de dados.
-Estrutura do Projeto 📂
 
-Diretório Raiz:
-index.js: Servidor backend (Node.js/Express) gerenciando rotas API, operações com SQLite e inicialização de dados.
-render.yaml: Configuração para deploy no Render, especificando ambiente Node.js e armazenamento persistente.
+---
 
+## 📁 Estrutura do Projeto
 
-Diretório /public:
-index.html: Estrutura HTML principal para a interface do dashboard.
-styles.css: Estilização CSS responsiva para componentes da UI.
-script.js: JavaScript do front-end para busca de dados, renderização de tabelas/gráficos e manipulação de formulários.
+### 📦 Diretório Raiz
 
+- `index.js`: Servidor backend com Node.js/Express, gerenciamento de rotas, integração com SQLite e inicialização de dados.
+- `render.yaml`: Arquivo de configuração para deploy na plataforma Render, com ambiente Node.js e volume persistente para o banco de dados.
 
+### 🌐 Diretório `/public`
 
-Funcionalidades ✨
+- `index.html`: Estrutura HTML principal do dashboard.
+- `styles.css`: Estilos CSS responsivos para uma UI agradável.
+- `script.js`: Lógica do front-end com JavaScript para:
+  - Requisições à API
+  - Exibição de gráficos e tabelas
+  - Manipulação de formulários
 
-Backend:
-API RESTful para operações CRUD em dados de saúde.
-Banco SQLite armazenando métricas como IMC, condições e hábitos.
-Inicialização de dados a partir de employees.json.
-Middleware CORS e JSON para comunicação segura da API.
+---
 
+## ✨ Funcionalidades
 
-Frontend:
-Dashboard responsivo com abas para visão geral e dados detalhados.
-Gráficos interativos (condições de saúde, IMC, hábitos) usando JavaScript puro.
-Tabela de dados filtrável com funções de edição/exclusão.
-Formulários modais para gerenciamento de registros.
-Exportação para Excel usando SheetJS.
+### 🔧 Backend
 
+- ✅ API RESTful com rotas CRUD para dados de saúde.
+- 🧠 Banco SQLite com informações como IMC, condições e hábitos.
+- 📂 Inicialização automática de dados com `employees.json`.
+- 🔐 Middleware CORS e JSON integrados para comunicação segura.
 
-Deploy:
-Configurado para Render com armazenamento persistente em /data para SQLite.
+### 💻 Frontend
 
+- 📊 Dashboard responsivo com abas para visão geral e detalhada.
+- 📈 Gráficos interativos (IMC, condições, hábitos) com JavaScript puro.
+- 🗂️ Tabela filtrável com opções de edição e exclusão.
+- 📝 Formulários modais para gerenciamento de registros.
+- 📤 Exportação de dados para Excel com uso de **SheetJS**.
 
+---
 
-Tecnologias 🛠️
+## 🚀 Deploy
 
-Backend: Node.js, Express, SQLite3
-Frontend: HTML5, CSS3, JavaScript puro, SheetJS
-Deploy: Render
-Ambiente: Node.js 18
+A aplicação está preparada para deploy na plataforma **Render**, com:
 
-Configuração ⚙️
+- Ambiente configurado para Node.js 18.
+- Volume persistente em `/data` para o banco SQLite.
 
-Clone o repositório: git clone <url-do-repositório>.
-Instale dependências: npm install.
-Inicie o servidor: node index.js.
-Acesse em http://localhost:3000.
+---
 
-Uso 📈
+## 🛠️ Tecnologias Utilizadas
 
-Adicione/edite dados de funcionários via formulários modais.
-Filtre por funcionário ou unidade.
-Visualize métricas em gráficos e cartões de resumo.
-Exporte relatórios como arquivos Excel.
+| Camada       | Tecnologias                          |
+|--------------|--------------------------------------|
+| Backend      | Node.js, Express, SQLite3            |
+| Frontend     | HTML5, CSS3, JavaScript Puro, SheetJS|
+| Deploy       | Render                               |
+| Ambiente     | Node.js 18                           |
 
-Melhorias Futuras 🚀
+---
 
-Adicionar autenticação para acesso seguro.
-Integrar bibliotecas de gráficos avançadas (ex.: Chart.js).
-Melhorar opções de filtragem e busca.
+## ⚙️ Como Executar Localmente
 
-Tags 🏷️
-#DashboardSaude #BemEstarFuncionarios #NodeJS #Express #SQLite #JavaScript #DesignResponsivo #VisualizacaoDados #APIRESTful #DeployRender
+```bash
+# 1. Clone o repositório:
+git clone <url-do-repositório>
+
+# 2. Navegue até a pasta do projeto:
+cd dashboard-saude
+
+# 3. Instale as dependências:
+npm install
+
+# 4. Inicie o servidor:
+node index.js
+
+##📈 Como Usar
+🧑‍💼 Adicione ou edite dados de funcionários via formulários modais.
+
+🔍 Filtre registros por funcionário ou unidade.
+
+📊 Visualize métricas em gráficos e cartões de resumo.
+
+📥 Exporte relatórios como arquivos .xlsx (Excel).
+
+##🚧 Melhorias Futuras
+🔐 Implementar autenticação para acesso seguro.
+
+📊 Integrar bibliotecas gráficas mais robustas como Chart.js.
+
+🔎 Ampliar filtros e funcionalidades de busca avançada.
+
+##🏷️ Tags
+#DashboardSaude #BemEstarFuncionarios #NodeJS #Express #SQLite
+#JavaScript #DesignResponsivo #VisualizacaoDados #APIRESTful #DeployRender
+
+##🧠 Autor
+Leandro Ferraz
