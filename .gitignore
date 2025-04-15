@@ -4,6 +4,9 @@ yarn-debug.log*
 yarn-error.log*
 dist/
 build/
+ed2519[D[D[D5519
+ed2519[D[D[D5519.pub
+employees.db
 .env
 echo "node_modules/" > .gitignore
 echo "employees.db" >> .gitignore
