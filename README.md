@@ -81,13 +81,13 @@ npm install
 
 # 4. Inicie o servidor:
 node index.js
-
+```
 ---
 
 ##📈 Como Usar
-🧑‍💼 Adicione ou edite dados de funcionários via formulários modais.
+-🧑‍💼 Adicione ou edite dados de funcionários via formulários modais.
 
-🔍 Filtre registros por funcionário ou unidade.
+-🔍 Filtre registros por funcionário ou unidade.
 
 📊 Visualize métricas em gráficos e cartões de resumo.
 
